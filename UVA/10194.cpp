@@ -5,12 +5,14 @@
 #include <string>
 #include <map>
 #include <set>
+#include <vector>
 #include <cassert>
 #include <algorithm>
 #include <sstream>
 #include <limits>
 #include <cmath>
 #include <utility>
+
 using namespace std;
 
 typedef long long Loong;
@@ -25,8 +27,19 @@ struct Team
 	int lose;
 	int goal;
 	int against;
-	string name;
+	char name[31];
 };
+Team teams[30];
+
+bool iequals(const char* a, const char* b)
+{
+	size_t l1 = strlen(a);
+	size_t l2 = strlen(b);
+	for (size_t i = 0; i < l1 && i < l2; ++i)
+		if (tolower(a[i]) != tolower(b[i]))
+			return tolower(a[i]) < tolower(b[i]);
+	return l1 < l2;
+}
 
 bool operator < (const Team& lhs, const Team& rhs)
 {
@@ -40,7 +53,7 @@ bool operator < (const Team& lhs, const Team& rhs)
 		return lhs.goal > rhs.goal;
 	if (lhs.game != rhs.game)
 		return lhs.game < rhs.game;
-	return lhs.name < rhs.name;
+	return iequals(lhs.name, rhs.name);
 }
 
 int main(void)
@@ -48,37 +61,71 @@ int main(void)
 #ifdef NOT_ONLINE_JUDGE
 	freopen("input.txt", "r", stdin);
 #endif
-	int T, s1, s2, n;
+	int T, s1, s2, n, m;
 	cin >> T;
+	getchar();
 	string tour, name, match;
 	while (T--)
 	{
-		map <string, Team> mp;
-		getchar();
+		memset(teams, 0, sizeof(teams));
+		map <string, int> mp;
 		getline(cin, tour);
+		cout << tour << endl;
 		cin >> n;
 		getchar();
-		while (n--)
-			getline(cin, name);
-		cin >> n;
-		while (n--)
+
+		for (int i = 0; i < n; ++i)
 		{
-			cin >> match;
+			getline(cin, name);
+			mp[name] = i;
+			strcpy(teams[i].name, name.c_str());
+		}
+		cin >> m;
+		getchar();
+		while (m--)
+		{
+			getline(cin, match);
 			int pos = match.find("#");
 			string name1 = match.substr(0, pos);
 			sscanf (match.c_str()+pos+1, "%d@%d", &s1, &s2);
 			pos = match.find_last_of("#");
 			string name2 = match.substr(pos+1);
-			//cout << name1 << " " << s1 << " " << name2 << " " << s2 << endl;
-			mp[name1].game++;
-			mp[name2].game++;
+			Team& t1 = teams[mp[name1]];
+			Team& t2 = teams[mp[name2]];
+			t1.game++;
+			t2.game++;
+			t1.goal += s1;
+			t2.goal += s2;
+			t1.against += s2;
+			t2.against += s1;
 			if (s1 > s2)
 			{
-				mp[name1].point += 3;
-				mp[name2].point += 0;
-				mp[name1].win++;
-				mp[name2].lose++;
+				t1.point += 3;
+				t1.win++;
+				t2.lose++;
 			}
+			else if (s1 < s2)
+			{
+				t2.point += 3;
+				t2.win++;
+				t1.lose++;
+			}
+			else
+			{
+				t1.point++;
+				t2.point++;
+				t1.tie++;
+				t2.tie++;
+			}
+		}
+
+		sort(teams, teams+n);
+
+		for (int i = 0; i < n; ++i)
+		{
+			const Team& t = teams[i];
+			printf("%d) %s %dp, %dg (%d-%d-%d), %dgd (%d-%d)\n",
+				i+1, t.name, t.point, t.game, t.win, t.tie, t.lose, t.goal-t.against, t.goal, t.against);
 		}
 		if (T) cout << endl;
 	}
