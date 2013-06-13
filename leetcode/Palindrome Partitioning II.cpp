@@ -15,26 +15,19 @@ public:
 		for (int i = 0; i < len; ++i)
 			p[i] = new bool[len];
 
-		for (int i = 0; i < len; ++i) {
-			for (int j = 0; j < len; ++j) {
-				if (i == j || i > j)
+		c[0] = 0;
+		const char* str = s.c_str();
+		for (int j = 0; j < len; ++j) {
+			c[j] = (j == 0 ? 0 : c[j-1]+1);
+			for (int i = j; i >= 0; --i) {
+				p[i][j] = false;
+				if (str[i] == str[j] && (j-i < 2 || p[i+1][j-1])) {
 					p[i][j] = true;
-				else
-					p[i][j] = false;
-				c[i] = len-1;
+					c[j] = (i == 0 ? 0 : min(c[j], c[i-1] + 1));
+				}
 			}
 		}
-		c[0] = 0;
-
-		const char* str = s.c_str();
-		for (int j = 0; j < len; ++j)
-			for (int i = j; i >= 0; --i)
-			{
-				p[i][j] |= (str[i] == str[j] && (j-i < 2 || p[i+1][j-1]));
-				if(p[i][j])
-					c[j] = (i == 0 ? 0 : min(c[j], c[i-1] + 1));
-			}
-			return c[len-1];
+		return c[len-1];
 	}
 private:
 	int* c;
