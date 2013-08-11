@@ -27,9 +27,9 @@ public:
 
 			for (int i = 0; i < n; ++i)
 			{
-				string temp = top.first;
 				for (char c = 'a'; c <= 'z'; ++c)
 				{
+					string temp = top.first;
 					temp[i] = c;
 					if (dict.count(temp))
 					{
