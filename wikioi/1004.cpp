@@ -2,6 +2,7 @@
 #include <cmath>
 #include <queue>
 #include <cstdio>
+#include <cstring>
 #include <iostream>
 using namespace std;
 
@@ -10,9 +11,6 @@ struct Step {
 	int dist;
 	int pid;
 	Step() : dist(0), pid(0) {}
-	Step(const Step& lhs) : dist(lhs.dist), pid(lhs.pid){
-		memcpy(c, lhs.c, sizeof(c));
-	}
 
 	int toKey() const{
 		int k = 0;
@@ -22,12 +20,13 @@ struct Step {
 			else if (c[i] == 'B') j = 2;
 			k = k * 3 + j;
 		}
-		return k*3+pid;
+		return k;
 	}
 };
 
-char play[] = {'B', 'W'};
-int dxdy[][2] = {0, -1, 0, 1, -1, 0, 1, 0};
+char play[] = {'W', 'B'};
+const int dx[]={1, -1, 0, 0};                 
+const int dy[]={0, 0, 1, -1};
 
 bool done(const Step& s) {
 	for (int i = 0; i < 4; ++i){
@@ -47,18 +46,16 @@ bool done(const Step& s) {
 	return false;
 }
 
-int bfs(const Step& st) {
-	set<int> vis;
+int bfs(Step st) {
+	set<int> vis[2];
 	queue<Step> que;
+	que.push(st);
+	vis[st.pid].insert(st.toKey());
 	
-	Step start = st;
-	que.push(start);
-	vis.insert(start.toKey());
+	st.pid = 1;
+	que.push(st);
+	vis[st.pid].insert(st.toKey());
 	
-	start.pid = 1;
-	que.push(start);
-	vis.insert(start.toKey());
-
 	while (!que.empty()) {
 		Step cur = que.front();
 		if (done(cur))
@@ -71,18 +68,18 @@ int bfs(const Step& st) {
 			if (cur.c[id] != 'O')
 				continue;
 			for (int k = 0; k < 4; ++k){
-				int ii = i + dxdy[k][0];
-				int jj = j + dxdy[k][1];
+				int ii = i + dx[k];
+				int jj = j + dy[k];
 				int nid = 4*ii + jj;
 				if (ii >= 0 && ii < 4 && jj >= 0 && jj < 4 && cur.c[nid] == player){
 					Step next = cur;
-					next.c[nid] = 'O';
-					next.c[id] = player;
+					swap(next.c[nid], next.c[id]);
 					next.dist++;
 					next.pid = 1-next.pid;
+					if (done(next)) return next.dist;
 					int key = next.toKey();
-					if (!vis.count(key)){
-						vis.insert(key);
+					if (vis[next.pid].count(key) == 0){
+						vis[next.pid].insert(key);
 						que.push(next);
 					}
 				}
@@ -94,11 +91,12 @@ int bfs(const Step& st) {
 
 int main() {
 	Step start;
+	char ch;
 	int k = 0;
-	for (int i = 0; i < 4; ++i){
-		for (int j = 0; j < 4; ++j)
-			start.c[k++] = getchar();
-		getchar();
+	while (cin >> ch) {
+		if (ch == 'W' || ch == 'B' || ch == 'O')
+			start.c[k++] = ch;
+		if (k == 16) break;
 	}
 
 	cout << bfs(start) << endl;
