@@ -3,18 +3,19 @@ using namespace std;
 
 class Solution {
 public:
+	typedef long long loong;
 	int divide(int dividend, int divisor) {
-		int ret = 0;
-		int sign = 1;
-		if (dividend > 0 && divisor < 0) sign = -1;
-		if (dividend < 0 && divisor > 0) sign = -1;
-		dividend = (dividend >= 0 ? dividend : -dividend);
-		divisor = (divisor >= 0 ? divisor : -divisor);
-		while (dividend >= divisor) {
-			dividend -= divisor;
-			ret++;
+		loong a = abs(loong(dividend));
+		loong b = abs(loong(divisor));
+		int ans = 0;
+		while (a >= b) {
+			int i = 0;
+			while (a >= (b << i+1))
+				++i;
+			ans += 1 << i;
+			a -= b << i;
 		}
-		return ret * sign;
+		return ((dividend ^ divisor) >> 31) ? -ans : ans;
 	}
 };
 

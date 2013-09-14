@@ -106,38 +106,24 @@ loong operator * (const loong& lhs, const loong& rhs) {
 	return ans;
 }
 
-loong power (const loong& base, int n) {
-	loong ans = loong(1);
-	while (n--)
-		 ans = ans * base;
-	return ans;
-}
-
 int p[80];
+loong pw[80];
 loong f[80][80];
 
 loong dp(int n) {
+	loong two(2);
+	pw[0] = two;
+	for (int i = 1; i < n; ++i)
+		pw[i] = pw[i-1] * two;
+	
 	for (int l = 1; l <= n; ++l){
 		for (int i = 0; i <= n-l; ++i){
 			int j = i+l-1;
-			if (i == j) f[i][j] = p[i] * power(loong(2), n-l+1);
+			if (i == j) f[i][j] = p[i] * pw[n-l];
 			else
-				f[i][j] = max(f[i+1][j]+p[i]*(1<<(n-l+1)),f[i][j-1]+p[j]*power(loong(2), n-l+1));
+				f[i][j] = max(f[i+1][j]+p[i]*pw[n-l],f[i][j-1]+p[j]*pw[n-l]);
 		}
 	}
-	return f[0][n-1];
-}
-
-loong dp1(int n) {
-	for (int l = 1; l <= n; ++l){
-		for (int i = 0; i <= n-l; ++i){
-			int j = i+l-1;
-			if (i == j) f[i][j] = p[i] * (1 << n);
-			else
-				f[i][j] = max(f[i+1][j]+p[i]*(1<<(n-l+1)),f[i][j-1]+p[j]*(1<<(n-l+1)));
-		}
-	}
-	cout << f[0][n-1] << endl;
 	return f[0][n-1];
 }
 
