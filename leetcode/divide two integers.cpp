@@ -4,23 +4,6 @@ using namespace std;
 class Solution {
 public:
 <<<<<<< HEAD
-<<<<<<< HEAD
-	typedef long long loong;
-	int divide(int dividend, int divisor) {
-		loong a = abs(loong(dividend));
-		loong b = abs(loong(divisor));
-		int ans = 0;
-		while (a >= b) {
-			int i = 0;
-			while (a >= (b << i+1))
-				++i;
-			ans += 1 << i;
-			a -= b << i;
-		}
-		return ((dividend ^ divisor) >> 31) ? -ans : ans;
-=======
-=======
->>>>>>> 112a4021c1c989148bea3904f0c2271f6a7d5c48
 	static bool odd(int x) {
 		return x&1 == 1;
 	}
@@ -46,10 +29,21 @@ public:
 			dividend -= divisor;
 		}
 		return sign * dividend;
-<<<<<<< HEAD
->>>>>>> 112a4021c1c989148bea3904f0c2271f6a7d5c48
 =======
->>>>>>> 112a4021c1c989148bea3904f0c2271f6a7d5c48
+	typedef long long loong;
+	int divide(int dividend, int divisor) {
+		loong a = abs(loong(dividend));
+		loong b = abs(loong(divisor));
+		int ans = 0;
+		while (a >= b) {
+			int i = 0;
+			while (a >= (b << i+1))
+				++i;
+			ans += 1 << i;
+			a -= b << i;
+		}
+		return ((dividend ^ divisor) >> 31) ? -ans : ans;
+>>>>>>> leetcode 9.14
 	}
 };
 
