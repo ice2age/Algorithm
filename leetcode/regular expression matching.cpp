@@ -4,35 +4,31 @@ using namespace std;
 
 class Solution {
 public:
-	bool isMatch1(const char *s, const char *p) {
-		const char* ss = NULL;
-		const char* pp = NULL;
-		while (*s != '\0') {
-			if (*p == *s || *p == '.') { s++, p++; continue; }
-			if (*p == '*') { ss = s, pp = p++; continue; }
-			if (pp && (*(pp-1) == *ss || *(pp-1) == '.')) { s = ++ss, p = pp+1; continue; }
-			if (*(p+1)=='*') { p+=2; continue; }
-			return false;
-		}
-		while (*p) {
-			if (*p == '*') pp = p++;
-			else if (*(p+1) == '*') p+=2;
-			else if (pp && *p == *(s-1)) p++;
-			else return false;
-		}
-		return !*p;
-	}
-
 	bool isMatch(const char *s, const char *p) {
-		if (!*s && !*p) return true;
-		if (*s && !*p) return false;
-		if (*p == '.') return isMatch(s+1, p+1);
-		return isMatch()
+		if (*p == '\0') 
+			return *s == '\0';
+		char next = *(p+1);
+		if (next != '*') {
+			assert(*p != '*');
+			if (*s == '\0') return false;
+			if (*p != '.' && *s != *p) return false;
+			return isMatch(++s, ++p);
+		} else {
+			while (*s == *p || (*s && *p == '.')){
+				if (isMatch(s, p+2)) return true;
+				++s;
+			}
+		}
+		return isMatch(s, p+2);
 	}
 };
 
 int main() {
 	Solution sln;
+	assert (sln.isMatch("", ".") == false);
+	assert (sln.isMatch("", ".*") == true);
+	assert (sln.isMatch("a", "ab*") == true);
+	assert (sln.isMatch("ab", ".*c") == false);
 	assert (sln.isMatch("aaa", "ab*a*c*a") == true);
 	assert (sln.isMatch("a", "ab*a") == false);
 	assert (sln.isMatch("aaa", "aaaa") == false);
@@ -52,8 +48,7 @@ int main() {
 	
 	cout << "test all passed!" << endl;
 	char s[100], p[100];
-	while (cin >> s >> p) {
+	while (cin >> s >> p)
 		cout << sln.isMatch(s, p) << endl;
-	}
 	return 0;
 }
