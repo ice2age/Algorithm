@@ -21,7 +21,6 @@ public:
         	string s21 = s2.substr(0, i);
         	string s22 = s2.substr(i);
         	if (isScramble(s11, s21) && isScramble(s12, s22)) return true;
-        	if (isScramble(s11, s22) && isScramble(s12, s21)) return true;
         	string s3 = s2.substr(0, n-i);
         	string s4 = s2.substr(n-i);
         	if (isScramble(s11, s4) && isScramble(s12, s3)) return true;
